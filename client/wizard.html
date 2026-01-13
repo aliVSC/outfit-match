@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OUTFIT MATCH | Perfil</title>
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="nav">
+        <div class="brand">
+          <span>OUTFIT MATCH</span>
+          <span class="badge">Perfil</span>
+        </div>
+        <div class="links">
+          <a class="btn small" href="results.html">Resultados</a>
+          <a class="btn small" href="catalog.html">Catálogo</a>
+          <button class="btn small danger" onclick="logout()">Salir</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card main max">
+          <h1>Asistente de estilo (2–3 min)</h1>
+          <p class="muted">
+            Completa tu perfil para detectar tu tipo de cuerpo y sugerirte
+            cortes + colores.
+          </p>
+
+          <div class="progress" style="margin: 12px 0">
+            <div id="bar"></div>
+          </div>
+
+          <div id="msg"></div>
+
+          <!-- PASO 1 -->
+          <section class="step" data-step="1">
+            <h2>1) Medidas</h2>
+            <p class="muted">
+              Ingresa medidas aproximadas en cm. (Usa cinta métrica.)
+            </p>
+
+            <div class="form">
+              <div class="row">
+                <div class="field">
+                  <label>Estatura (cm)</label>
+                  <input
+                    class="input"
+                    id="estaturaCm"
+                    type="number"
+                    min="100"
+                    max="230"
+                    placeholder="Ej: 165"
+                  />
+                </div>
+                <div class="field">
+                  <label>Hombros (cm)</label>
+                  <input
+                    class="input"
+                    id="hombrosCm"
+                    type="number"
+                    step="0.1"
+                    placeholder="Ej: 42.5"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="field">
+                  <label>Pecho/Busto (cm)</label>
+                  <input
+                    class="input"
+                    id="pechoCm"
+                    type="number"
+                    step="0.1"
+                    placeholder="Ej: 90"
+                  />
+                </div>
+                <div class="field">
+                  <label>Cintura (cm)</label>
+                  <input
+                    class="input"
+                    id="cinturaCm"
+                    type="number"
+                    step="0.1"
+                    placeholder="Ej: 70"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="field">
+                  <label>Cadera (cm)</label>
+                  <input
+                    class="input"
+                    id="caderaCm"
+                    type="number"
+                    step="0.1"
+                    placeholder="Ej: 98"
+                  />
+                </div>
+                <div class="field">
+                  <label>Objetivo (opcional)</label>
+                  <select id="objetivo" class="input">
+                    <option value="">Selecciona</option>
+                    <option value="diario">Día a día</option>
+                    <option value="oficina">Oficina</option>
+                    <option value="cita">Cita</option>
+                    <option value="fiesta">Fiesta</option>
+                    <option value="entrevista">Entrevista</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- PASO 2 -->
+          <section class="step" data-step="2" style="display: none">
+            <h2>2) Colorimetría</h2>
+            <p class="muted">
+              Esto hace que las recomendaciones de colores se sientan “hechas
+              para ti”.
+            </p>
+
+            <div class="form">
+              <div class="row">
+                <div class="field">
+                  <label>Tono de piel</label>
+                  <!-- Select personalizado: Tono de piel con referencia visual -->
+                  <div class="selectbox" id="tonoPielBox">
+                    <button class="select-btn" type="button" id="tonoPielBtn">
+                      <span id="tonoPielLabel">Selecciona...</span>
+                      <span class="chev">▼</span>
+                    </button>
+
+                    <div class="menu" id="tonoPielMenu">
+                      <div
+                        class="option"
+                        data-value="clara"
+                        data-color="#f5d7c5"
+                      >
+                        <span class="swatch" style="background: #f5d7c5"></span>
+                        <span class="label">Clara</span>
+                        <span class="sub">Referencia</span>
+                      </div>
+                      <div
+                        class="option"
+                        data-value="media"
+                        data-color="#e3b38f"
+                      >
+                        <span class="swatch" style="background: #e3b38f"></span>
+                        <span class="label">Media</span>
+                        <span class="sub">Referencia</span>
+                      </div>
+                      <div
+                        class="option"
+                        data-value="morena"
+                        data-color="#c58b5a"
+                      >
+                        <span class="swatch" style="background: #c58b5a"></span>
+                        <span class="label">Morena</span>
+                        <span class="sub">Referencia</span>
+                      </div>
+                      <div
+                        class="option"
+                        data-value="oscura"
+                        data-color="#7a4a2b"
+                      >
+                        <span class="swatch" style="background: #7a4a2b"></span>
+                        <span class="label">Oscura</span>
+                        <span class="sub">Referencia</span>
+                      </div>
+                    </div>
+
+                    <!-- input real para enviar al backend -->
+                    <input type="hidden" id="tonoPiel" value="" />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label>Subtono (clave)</label>
+                  <select id="subTono" class="input">
+                    <option value="">Selecciona</option>
+                    <option value="calido">Cálido</option>
+                    <option value="frio">Frío</option>
+                    <option value="neutro">Neutro</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="field">
+                  <label>Color de ojos (opcional)</label>
+                  <input
+                    id="colorOjos"
+                    class="input"
+                    placeholder="Ej: café, miel, verde"
+                  />
+                </div>
+
+                <div class="field">
+                  <label>Color de cabello (opcional)</label>
+                  <input
+                    id="colorCabello"
+                    class="input"
+                    placeholder="Ej: negro, castaño, rubio"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- PASO 3 -->
+          <section class="step" data-step="3" style="display: none">
+            <h2>3) Estilo y preferencias</h2>
+            <p class="muted">Cuéntanos qué te gusta y qué NO usarías.</p>
+
+            <div class="form">
+              <div class="row">
+                <div class="field">
+                  <label>Estilo principal</label>
+                  <select id="estiloPrincipal" class="input">
+                    <option value="">Selecciona</option>
+                    <option value="casual">Casual</option>
+                    <option value="formal">Formal</option>
+                    <option value="streetwear">Streetwear</option>
+                    <option value="elegante">Elegante</option>
+                    <option value="minimalista">Minimalista</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label>Colores favoritos (coma)</label>
+                  <input
+                    id="coloresFavoritos"
+                    class="input"
+                    placeholder="Ej: negro, blanco, azul"
+                  />
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Prendas que NO usas (coma)</label>
+                <input
+                  id="prendasNoUsa"
+                  class="input"
+                  placeholder="Ej: shorts, crop tops, faldas"
+                />
+              </div>
+
+              <div class="row">
+                <div class="field">
+                  <label>Presupuesto mínimo ($)</label>
+                  <input
+                    id="presupuestoMin"
+                    class="input"
+                    type="number"
+                    step="0.01"
+                    placeholder="Ej: 10"
+                  />
+                </div>
+                <div class="field">
+                  <label>Presupuesto máximo ($)</label>
+                  <input
+                    id="presupuestoMax"
+                    class="input"
+                    type="number"
+                    step="0.01"
+                    placeholder="Ej: 60"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- PASO 4 -->
+          <section class="step" data-step="4" style="display: none">
+            <h2>4) Listo</h2>
+            <p class="muted">
+              Guardaremos tu perfil y te llevamos a tus recomendaciones.
+            </p>
+
+            <div
+              class="card"
+              style="padding: 14px; background: rgba(255, 255, 255, 0.02)"
+            >
+              <div class="muted" style="font-size: 13px">Resumen rápido:</div>
+              <div id="summary" style="margin-top: 8px"></div>
+            </div>
+          </section>
+
+          <div class="hr"></div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap">
+            <button class="btn" id="prevBtn" type="button">Atrás</button>
+            <button class="btn primary" id="nextBtn" type="button">
+              Siguiente
+            </button>
+            <button
+              class="btn primary"
+              id="saveBtn"
+              type="button"
+              style="display: none"
+            >
+              Guardar y ver resultados
+            </button>
+          </div>
+        </div>
+
+        <div class="card side">
+          <h2>¿Cómo te recomendamos?</h2>
+          <div class="hr"></div>
+          <p class="muted">
+            1) Detectamos tu <b>tipo de cuerpo</b> usando proporciones.<br />
+            2) Ajustamos colores con <b>subtono</b> (cálido/frío/neutro).<br />
+            3) Filtramos el catálogo por tags y presupuesto.<br />
+            4) (Opcional) la IA arma outfits con prendas reales.
+          </p>
+
+          <div class="hr"></div>
+          <div class="pills">
+            <span class="pill">Reloj de arena</span>
+            <span class="pill">Pera</span>
+            <span class="pill">Manzana</span>
+            <span class="pill">Rectángulo</span>
+            <span class="pill">Triángulo invertido</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">© OUTFIT MATCH</div>
+    </div>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/wizard.js"></script>
+  </body>
+</html>

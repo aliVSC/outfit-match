@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OUTFIT MATCH | Login</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="brand">
+        <span>OUTFIT MATCH</span>
+      </div>
+      <div class="links">
+        <a class="btn small" href="register.html">Crear cuenta</a>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card main max">
+        <h1>Inicia sesión</h1>
+        <p class="muted">Accede para recibir recomendaciones según tus medidas, estilo y colorimetría.</p>
+
+        <div id="msg"></div>
+
+        <form class="form" id="loginForm">
+          <div class="field">
+            <label>Email</label>
+            <input class="input" type="email" id="email" placeholder="tu@email.com" required />
+          </div>
+          <div class="field">
+            <label>Contraseña</label>
+            <input class="input" type="password" id="password" placeholder="••••••••" required />
+          </div>
+
+          <button class="btn primary" type="submit">Entrar</button>
+          <a class="btn" href="register.html">No tengo cuenta</a>
+        </form>
+      </div>
+
+      <div class="card side">
+        <h2>¿Qué hace OUTFIT MATCH?</h2>
+        <div class="hr"></div>
+        <div class="pills">
+          <span class="pill">Tipo de cuerpo</span>
+          <span class="pill">Colorimetría</span>
+          <span class="pill">Estilo</span>
+          <span class="pill">Catálogo inteligente</span>
+          <span class="pill">Outfits con IA</span>
+        </div>
+        <p class="muted" style="margin-top:12px;">
+          Completa tu perfil en 2–3 minutos. Te damos tips de cortes, colores y prendas que te favorecen,
+          y luego te llevamos directo al catálogo filtrado para ti.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer">© OUTFIT MATCH</div>
+  </div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/login.js"></script>
+</body>
+</html>

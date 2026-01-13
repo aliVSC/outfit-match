@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OUTFIT MATCH | Registro</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="brand">
+        <span>OUTFIT MATCH</span>
+      </div>
+      <div class="links">
+        <a class="btn small" href="login.html">Volver a login</a>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h1>Crear cuenta</h1>
+        <p class="muted">Regístrate para guardar tu perfil y tus recomendaciones.</p>
+
+        <div id="msg"></div>
+
+        <form class="form" id="registerForm">
+          <div class="field">
+            <label>Nombres</label>
+            <input class="input" type="text" id="nombres" placeholder="Ej: Alison" required />
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input class="input" type="email" id="email" placeholder="tu@email.com" required />
+          </div>
+
+          <div class="field">
+            <label>Contraseña</label>
+            <input class="input" type="password" id="password" placeholder="mínimo 6 caracteres" minlength="6" required />
+          </div>
+
+          <button class="btn primary" type="submit">Registrarme</button>
+        </form>
+      </div>
+
+      
+    </div>
+
+    <div class="footer">© OUTFIT MATCH</div>
+  </div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OUTFIT MATCH | Resultados</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="brand">
+        <span>OUTFIT MATCH</span>
+        <span class="badge">Recomendaciones</span>
+      </div>
+      <div class="links">
+        <a class="btn small" href="wizard.html">Editar perfil</a>
+        <a class="btn small" href="catalog.html">Catálogo</a>
+        <button class="btn small danger" onclick="logout()">Salir</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card main max">
+        <h1>Tus resultados</h1>
+        <p class="muted">Basado en tus medidas y colorimetría.</p>
+
+        <div id="msg"></div>
+
+        <div class="hr"></div>
+
+        <div id="content" style="display:none;">
+          <h2 id="tipo"></h2>
+
+          <div class="row" style="margin-top:10px;">
+            <div class="card" style="padding:14px; background: rgba(255,255,255,.02);">
+              <h3>Prendas que te favorecen</h3>
+              <div id="ideal" class="pills"></div>
+            </div>
+
+            <div class="card" style="padding:14px; background: rgba(255,255,255,.02);">
+              <h3>Evita (o usa con cuidado)</h3>
+              <div id="evita" class="pills"></div>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <h3>Paleta recomendada</h3>
+          <div class="row">
+            <div class="card" style="padding:14px; background: rgba(255,255,255,.02);">
+              <div class="muted">Base</div>
+              <div id="base" class="pills" style="margin-top:8px;"></div>
+            </div>
+            <div class="card" style="padding:14px; background: rgba(255,255,255,.02);">
+              <div class="muted">Colores fuertes</div>
+              <div id="fuertes" class="pills" style="margin-top:8px;"></div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:14px; background: rgba(255,255,255,.02); margin-top:10px;">
+            <div class="muted">Evita</div>
+            <div id="palEvita" class="pills" style="margin-top:8px;"></div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn primary" href="catalog.html">Ir al catálogo inteligente</a>
+            <button class="btn" id="aiBtn">Recomendar outfits con IA</button>
+          </div>
+
+          <div id="aiBox" style="margin-top:12px;"></div>
+        </div>
+      </div>
+
+      <div class="card results-side-card">
+        <h2>Consejo rápido</h2>
+        <div class="hr"></div>
+        <p class="muted">
+          Para presentar tu proyecto, muestra:
+          <br>✅ perfil guardado
+          <br>✅ tipo de cuerpo detectado
+          <br>✅ colores recomendados
+          <br>✅ catálogo filtrado
+          <br>✅ (opcional) outfits IA con explicación
+        </p>
+      </div>
+    </div>
+
+    <div class="footer">© OUTFIT MATCH</div>
+  </div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/results.js"></script>
+</body>
+</html>

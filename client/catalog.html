@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OUTFIT MATCH | Catálogo</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="brand">
+        <span>OUTFIT MATCH</span>
+        <span class="badge">Catálogo inteligente</span>
+      </div>
+      <div class="links">
+        <a class="btn small" href="results.html">Resultados</a>
+        <a class="btn small" href="wizard.html">Editar perfil</a>
+        <button class="btn small danger" onclick="logout()">Salir</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card main max">
+        <h1>Prendas recomendadas</h1>
+        <p class="muted">Filtrado automáticamente según tu tipo de cuerpo, subtono, estilo y presupuesto.</p>
+
+        <div id="msg"></div>
+
+        <div class="hr"></div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <input id="search" class="input" placeholder="Buscar por nombre, color o categoría..." style="flex:1; min-width:240px;">
+          <button class="btn" id="reloadBtn">Actualizar</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <div id="items" class="items"></div>
+      </div>
+
+      <div class="card side">
+        <h2>Tip de presentación</h2>
+        <div class="hr"></div>
+        <p class="muted">
+          Si tu filtro devuelve pocas prendas, revisa:
+          <br>• que tus prendas tengan tags (tipoCuerpo, subtono, estilo)
+          <br>• stock > 0
+          <br>• presupuesto (min/max)
+        </p>
+      </div>
+    </div>
+
+    <div class="footer">© OUTFIT MATCH</div>
+  </div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/catalog.js"></script>
+</body>
+</html>
