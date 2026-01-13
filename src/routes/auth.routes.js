@@ -5,9 +5,7 @@ const { getPool, sql } = require("../config/db");
 
 router.post("/register", async (req, res) => {
   const { nombres, email, password } = req.body;
-  if (!nombres || !email || !password) {
-    return res.status(400).json({ message: "Faltan campos" });
-  }
+  if (!nombres || !email || !password) return res.status(400).json({ message: "Faltan campos" });
 
   const pool = await getPool();
 
@@ -31,7 +29,6 @@ router.post("/register", async (req, res) => {
 
   const userId = result.recordset[0].Id;
 
-  // Crear perfil vacío
   await pool.request()
     .input("UsuarioId", sql.Int, userId)
     .query("INSERT INTO PerfilUsuario (UsuarioId) VALUES (@UsuarioId)");
