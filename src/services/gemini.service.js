@@ -10,37 +10,45 @@ function buildPrompt({ perfil, prendas }) {
     tags: p.Tags || [],
   }));
 
+  // ⚠️ prompt más estricto (y con ejemplo)
   return `
 Eres un asesor de imagen profesional y estilista.
-Quiero que generes recomendaciones PERSONALIZADAS usando:
-- Perfil del usuario (tipo de cuerpo, medidas, subtono, estilo, presupuesto, prendas a evitar)
-- Un catálogo real de prendas con colores, precios y tags
+Tu tarea: generar recomendaciones PERSONALIZADAS basadas en el PERFIL y el CATÁLOGO.
 
-REGLAS:
-1) Devuelve SOLO JSON válido (sin texto extra, sin markdown).
-2) Recomienda outfits coherentes con:
-   - tipo_cuerpo: ${perfil.TipoCuerpo || "desconocido"}
-   - subtono: ${perfil.SubTono || "neutro"}
-   - tono_piel: ${perfil.TonoPiel || "no indicado"}
-   - estilo: ${perfil.EstiloPrincipal || "casual"}
-   - presupuesto_min: ${perfil.PresupuestoMin ?? 0}
-   - presupuesto_max: ${perfil.PresupuestoMax ?? 999999}
-   - prendas_no_usa: ${perfil.PrendasNoUsa || ""}
-3) Cada outfit debe incluir 3 a 5 prendas del catálogo (por id) y explicar el porqué.
-4) Incluye consejos: colores recomendados, cortes, y 2 “errores a evitar”.
-5) Si faltan datos del perfil, asume lo mínimo y dilo en "notas".
+REGLA CRÍTICA:
+- Responde ÚNICAMENTE con JSON válido.
+- NO incluyas texto extra.
+- NO incluyas markdown.
+- NO uses \`\`\`.
+- El primer carácter de tu respuesta debe ser { y el último debe ser }.
 
-FORMATO JSON EXACTO:
+PERFIL:
+- tipo_cuerpo: ${perfil.TipoCuerpo || "desconocido"}
+- subtono: ${perfil.SubTono || "neutro"}
+- tono_piel: ${perfil.TonoPiel || "no indicado"}
+- estilo: ${perfil.EstiloPrincipal || "casual"}
+- presupuesto_min: ${perfil.PresupuestoMin ?? 0}
+- presupuesto_max: ${perfil.PresupuestoMax ?? 999999}
+- prendas_no_usa: ${perfil.PrendasNoUsa || ""}
+
+REGLAS DE RECOMENDACIÓN:
+- Genera 2 a 4 outfits.
+- Cada outfit debe incluir 3 a 5 prendas del catálogo (por id).
+- Evita prendas que el usuario no usa.
+- Mantente dentro del presupuesto (total_estimado debe respetar max en lo posible).
+- Explica por qué favorece al tipo de cuerpo y por qué los colores combinan con el subtono.
+
+FORMATO JSON EXACTO (sin campos extra):
 {
   "outfits": [
     {
       "nombre": "string",
       "prendas": [
-        { "id": number, "motivo": "string breve" }
+        { "id": 1, "motivo": "string breve" }
       ],
       "explicacion": "string",
       "colores_clave": ["string", "string"],
-      "total_estimado": number
+      "total_estimado": 0
     }
   ],
   "consejos_rapidos": ["string", "string", "string"],
@@ -53,17 +61,68 @@ ${JSON.stringify(items).slice(0, 12000)}
 `;
 }
 
+// ✅ Parser más tolerante (acepta ```json ...``` y extrae { ... })
 function safeParseJson(text) {
-  try {
-    return JSON.parse(text);
-  } catch {
-    const first = text.indexOf("{");
-    const last = text.lastIndexOf("}");
-    if (first >= 0 && last > first) {
-      return JSON.parse(text.slice(first, last + 1));
-    }
-    throw new Error("Gemini no devolvió JSON válido");
+  if (!text || typeof text !== "string") {
+    throw new Error("Gemini devolvió una respuesta vacía");
   }
+
+  const cleaned = text
+    .trim()
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```$/i, "")
+    .trim();
+
+  // 1) intento directo
+  try {
+    return JSON.parse(cleaned);
+  } catch {}
+
+  // 2) extraer primer bloque { ... }
+  const first = cleaned.indexOf("{");
+  const last = cleaned.lastIndexOf("}");
+  if (first >= 0 && last > first) {
+    const slice = cleaned.slice(first, last + 1);
+    return JSON.parse(slice);
+  }
+
+  throw new Error("Gemini no devolvió JSON válido");
+}
+
+// ✅ Si falla, hacemos “reparación” pidiendo a Gemini que convierta a JSON
+async function repairToJson(model, rawText) {
+  const repairPrompt = `
+Convierte el siguiente contenido en JSON válido con el formato EXACTO indicado.
+Reglas:
+- Devuelve SOLO JSON (sin markdown, sin texto).
+- Debe comenzar con { y terminar con }.
+- No inventes campos extra.
+
+FORMATO JSON EXACTO:
+{
+  "outfits": [
+    {
+      "nombre": "string",
+      "prendas": [
+        { "id": 1, "motivo": "string breve" }
+      ],
+      "explicacion": "string",
+      "colores_clave": ["string", "string"],
+      "total_estimado": 0
+    }
+  ],
+  "consejos_rapidos": ["string", "string", "string"],
+  "errores_a_evitar": ["string", "string"],
+  "notas": "string"
+}
+
+CONTENIDO A CONVERTIR:
+${rawText}
+`;
+
+  const result = await model.generateContent(repairPrompt);
+  return result.response.text();
 }
 
 async function geminiOutfits({ perfil, prendas }) {
@@ -72,56 +131,35 @@ async function geminiOutfits({ perfil, prendas }) {
 
   const genAI = new GoogleGenerativeAI(apiKey);
 
-  // ✅ IMPORTANTE:
-  // Tu error fue porque gemini-1.5-flash no está disponible/soportado en tu endpoint.
-  // Usamos fallback automático para que siempre intente modelos compatibles.
-  const candidates = [
-    process.env.GEMINI_MODEL, // el que configures en .env
-    "gemini-1.5-pro",
-    "gemini-1.0-pro",
-  ].filter(Boolean);
+  // ✅ usa el modelo real que ya configuraste
+  const modelName = process.env.GEMINI_MODEL;
+  if (!modelName) {
+    throw new Error("Falta GEMINI_MODEL en .env (usa models/... del listado)");
+  }
+
+  // ✅ configuración más estable para JSON
+  const model = genAI.getGenerativeModel({
+    model: modelName,
+    generationConfig: {
+      temperature: 0.55, // 👈 bajamos para respuestas estructuradas
+      topP: 0.9,
+      maxOutputTokens: 900,
+    },
+  });
 
   const prompt = buildPrompt({ perfil, prendas });
 
-  let lastErr = null;
+  // 1) Primer intento
+  const result1 = await model.generateContent(prompt);
+  const text1 = result1.response.text();
 
-  for (const modelName of candidates) {
-    try {
-      const model = genAI.getGenerativeModel({
-        model: modelName,
-        generationConfig: {
-          temperature: 0.9,
-          topP: 0.95,
-          maxOutputTokens: 900,
-        },
-      });
-
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
-
-      return safeParseJson(text);
-    } catch (err) {
-      lastErr = err;
-
-      const msg = String(err?.message || err);
-
-      // Si el modelo no existe o no soporta generateContent → probamos el siguiente
-      if (
-        msg.includes("not found") ||
-        msg.includes("not supported") ||
-        msg.includes("ListModels")
-      ) {
-        continue;
-      }
-
-      // Otros errores (API key inválida, red, permisos) → salimos ya
-      throw err;
-    }
+  try {
+    return safeParseJson(text1);
+  } catch (e1) {
+    // 2) Reparación (segundo intento usando el texto anterior)
+    const repairedText = await repairToJson(model, text1);
+    return safeParseJson(repairedText);
   }
-
-  throw new Error(
-    `No se pudo usar ningún modelo Gemini. Último error: ${lastErr?.message || lastErr}`
-  );
 }
 
 module.exports = { geminiOutfits };
