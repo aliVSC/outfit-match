@@ -5,9 +5,27 @@ const content = document.getElementById("content");
 const aiBtn = document.getElementById("aiBtn");
 const aiBox = document.getElementById("aiBox");
 
+// ✅ mapa de imágenes por tipo de cuerpo
+const bodyTypeImages = {
+  pera: "assets/img/body/pera.png",
+  manzana: "assets/img/body/manzana.png",
+  reloj_arena: "assets/img/body/reloj_arena.png",
+  rectangulo: "assets/img/body/rectangulo.png",
+  triangulo_invertido: "assets/img/body/triangulo_invertido.png",
+  desconocido: "assets/img/body/default.png",
+};
+
+function setBodyTypeImage(tipo) {
+  const img = document.getElementById("bodyTypeImg");
+  if (!img) return;
+
+  const key = (tipo || "desconocido").toLowerCase().trim();
+  img.src = bodyTypeImages[key] || "assets/img/body/default.png";
+  img.alt = `Tipo de cuerpo: ${prettyTipo(key)}`;
+}
+
 function toCssColor(name) {
   const map = {
-    // básicos / neutros
     beige: "#d9c4a7",
     camel: "#c19a6b",
     marrón: "#7a4a2b",
@@ -20,20 +38,17 @@ function toCssColor(name) {
     "azul denim": "#4a6fa5",
     "azul marino": "#14213d",
 
-    // cálidos
     mostaza: "#d4a017",
     terracota: "#c96b4b",
     "verde oliva": "#6b7b3d",
     "rojo ladrillo": "#b23a2f",
     naranja: "#f08c2b",
 
-    // fríos
     vino: "#6d0f2c",
     "azul rey": "#1d4ed8",
     esmeralda: "#10b981",
     morado: "#6d28d9",
 
-    // extras
     "verde bosque": "#1f4d3a",
     "rosa palo": "#d8a7b1",
     "azul petróleo": "#1f6f78",
@@ -47,6 +62,7 @@ function toCssColor(name) {
 }
 
 function colorChipList(el, arr) {
+  if (!el) return;
   el.innerHTML = "";
   (arr || []).forEach((name) => {
     const chip = document.createElement("span");
@@ -59,6 +75,7 @@ function colorChipList(el, arr) {
 }
 
 function pillList(el, arr) {
+  if (!el) return;
   el.innerHTML = "";
   (arr || []).forEach((x) => {
     const s = document.createElement("span");
@@ -90,20 +107,21 @@ function prettyTipo(tipo) {
       r.tipoCuerpo
     )}`;
 
+    // ✅ Imagen tipo de cuerpo
+    setBodyTypeImage(r.tipoCuerpo);
+
     pillList(document.getElementById("ideal"), r.tips?.ideal);
     pillList(document.getElementById("evita"), r.tips?.evita);
 
     colorChipList(document.getElementById("base"), r.palette?.base);
     colorChipList(document.getElementById("fuertes"), r.palette?.fuertes);
     colorChipList(document.getElementById("palEvita"), r.palette?.evita);
-
-    
   } catch (err) {
     msg.innerHTML = `<div class="alert">${err.message}. Completa tu perfil primero.</div>`;
   }
 })();
 
-aiBtn.addEventListener("click", async () => {
+aiBtn?.addEventListener("click", async () => {
   aiBox.innerHTML = "";
   aiBtn.disabled = true;
   aiBtn.textContent = "Generando...";
@@ -121,21 +139,21 @@ aiBtn.addEventListener("click", async () => {
     }
 
     aiBox.innerHTML = outfits
-      .map(
-        (o) => `
-      <div class="card" style="padding:14px; background: rgba(255,255,255,.02); margin-top:10px;">
-        <h3 style="margin:0 0 6px;">${o.nombre || "Outfit"}</h3>
-        <div class="muted" style="font-size:13px; margin-bottom:10px;">${
-          o.razon || ""
-        }</div>
-        <div class="pills">
-          ${(o.prendas || [])
-            .map((p) => `<span class="pill">#${p.id} ${p.nombre}</span>`)
-            .join("")}
-        </div>
-      </div>
-    `
-      )
+      .map((o) => {
+        const pills = (o.prendas || [])
+          .map((p) => `<span class="pill">#${p.id}${p.nombre ? " " + p.nombre : ""}</span>`)
+          .join("");
+
+        return `
+          <div class="card" style="padding:14px; margin-top:10px;">
+            <h3 style="margin:0 0 6px;">${o.nombre || "Outfit"}</h3>
+            <div class="muted" style="font-size:13px; margin-bottom:10px;">
+              ${o.explicacion || o.razon || ""}
+            </div>
+            <div class="pills">${pills}</div>
+          </div>
+        `;
+      })
       .join("");
   } catch (err) {
     aiBox.innerHTML = `<div class="alert">${err.message}</div>`;
